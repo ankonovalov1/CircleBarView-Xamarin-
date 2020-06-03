@@ -9,8 +9,6 @@ using Xamarin.Forms;
 
 namespace CircleBarView
 {
-    // Learn more about making custom code visible in the Xamarin.Forms previewer
-    // by visiting https://aka.ms/xamarinforms-previewer
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {       
@@ -32,13 +30,18 @@ namespace CircleBarView
             
             btn1.Clicked += ClickMe;
         }
-
+        
         private void ClickMe(object sender, System.EventArgs e)
         {            
-            timer.Interval = CircleBarStaticResources.INTERVAL_OF_INVALIDATE_CALL;
-            timer.Elapsed += Timer_Elapsed;
-            CircleBar.TimerIsRunning = true;
-            timer.Start();
+            if(CircleBar.TimerIsRunning)
+                return;
+            else
+            {
+                timer.Interval = CircleBarStaticResources.INTERVAL_OF_INVALIDATE_CALL;
+                timer.Elapsed += Timer_Elapsed;
+                CircleBar.TimerIsRunning = true;
+                timer.Start();
+            }
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
@@ -62,6 +65,7 @@ namespace CircleBarView
             else
             {
                 timer.Stop();
+                CircleBar.TimerIsRunning = false;
                 CircleBar.TimeLeft = CircleBarStaticResources.TIME_LEFT_EXPIRED;
             }
         }

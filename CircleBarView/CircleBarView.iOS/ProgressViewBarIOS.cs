@@ -1,14 +1,15 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
-
 using CoreGraphics;
+using CoreText;
 using Foundation;
 using UIKit;
 using Xamarin.Essentials;
 
 namespace CircleBarView.iOS
 {
-    [Register("ProgressViewBar")]
+    [Register("ProgressViewBar"), DesignTimeVisible(true)]
     public class ProgressViewBarIOS : UIView
     {
         public ProgressViewBarIOS()
@@ -20,16 +21,20 @@ namespace CircleBarView.iOS
         {
             Initialize();
         }
-
+        public ProgressViewBarIOS(IntPtr p) : base(p)
+        {
+            Initialize();
+        }
         void Initialize()
         {
+            path = new CGPath();
             _timeLeftTextColor = UIColor.Gray;
             color112 = new UIColor[] {
-                UIColor.FromName("#f69326"), // orange
-                UIColor.FromName("#fb3a57"), // rose
-                UIColor.FromName("#fb0d17"),  // dark rose
-                UIColor.FromName("#facb94"), // light orange                
-                UIColor.FromName("#f69326"), // orange
+                UIColor.FromRGB(246, 147, 38), // orange
+                UIColor.FromRGB(251, 58, 87), // rose
+                UIColor.FromRGB(251, 13, 23),  // dark rose
+                UIColor.FromRGB(250, 203, 148), // light orange                
+                UIColor.FromRGB(246, 147, 38), // orange
             };
             positions = new float[]
             {
@@ -38,138 +43,173 @@ namespace CircleBarView.iOS
             };
         }
 
-        //private string timeLeft = CircleBarStaticResources.TIME_LEFT;
-        //private float _progress, ringDiameter;
-        private UIColor _backColor, _frontColor, _timeLeftTextColor;
-        //private RectangleF _ringDrawArea;
-        //private bool _sizeChanged = false;
-        //private bool _timerIsRunning = false;
-        //private float _time;
+        CGPath path;
+        private string timeLeft;
+        private float _progress, radius, strokeWidth;
+        private UIColor _backColor, _frontColor, _timeLeftTextColor, timeColor;
+        private CGRect _ringDrawArea;
+        private bool _timerIsRunning = false;
+        private float _time;
         UIColor[] color112;
         float[] positions;
+        public float Progress
+        {
+            get
+            {
+                return _progress;
+            }
+            set
+            {
+                if (_progress != 1.0f)
+                {
+                    _progress = value;
+                    if (_progress >= 0.9)
+                    {
+                        FrontColor = UIColor.FromRGB(251, 53, 114);
+                    }
+                    if (_timerIsRunning)
+                    {
+                        SetNeedsDisplay();
+                    }
+                }
+            }
+        }
+        public UIColor BackColor { get => _backColor; set => _backColor = value; }
+        public UIColor FrontColor { get => _frontColor; set => _frontColor = value; }
+        public float Time { get => _time; set => _time = value; }
+        public bool TimerIsRunning { get => _timerIsRunning; set => _timerIsRunning = value; }
+        public string TimeLeft
+        {
+            get
+            {
+                return timeLeft;
+            }
+            set
+            {
+                timeLeft = value;
+                if (timeLeft == "EXPIRED")
+                {
+                    _timeLeftTextColor = UIColor.FromName("#fb3572");
+                    SetNeedsDisplay();
+                }
+            }
+        }
+        public override void Draw(CGRect rect)
+        {
+            base.Draw(rect);
 
-        //public float Progress
-        //{
-        //    get
-        //    {
-        //        return _progress;
-        //    }
-        //    set
-        //    {
-        //        if (_progress != 1.0f)
-        //        {
-        //            _progress = value;
-        //            if (_progress >= 0.9)
-        //            {
-        //                FrontColor = UIColor.FromName("#fb3572");
-        //            }
-        //            if (_timerIsRunning)
-        //            {
-        //                SetNeedsDisplay();
-        //            }
-        //        }
-        //    }
-        //}
-        //public Color BackColor { get => _backColor.ToSystemColor(); set => _backColor = value.ToPlatformColor(); }
-        //public Color FrontColor { get => _frontColor.ToSystemColor(); set => _frontColor = value.ToPlatformColor(); }
-        //public float Time { get => _time; set => _time = value; }
-        //public bool TimerIsRunning { get => _timerIsRunning; set => _timerIsRunning = value; }
-        //public string TimeLeft
-        //{
-        //    get
-        //    {
-        //        return timeLeft;
-        //    }
-        //    set
-        //    {
-        //        timeLeft = value;
-        //        if (timeLeft == "EXPIRED")
-        //        {
-        //            _timeLeftTextColor = UIColor.FromName("#fb3572");
-        //            SetNeedsDisplay();
-        //        }
-        //    }
-        //}
-        //public override void Draw(CGRect rect)
-        //{
-        //    base.Draw(rect);
+            using (CGContext context = UIGraphics.GetCurrentContext())
+            {
 
-        //    using (CGContext g = UIGraphics.GetCurrentContext())
-        //    {
-        //        float strokeWidth = 0.0f;
+                float strokeWidth = 0.0f;
 
-        //        var displayDensity = UIScreen.MainScreen.Scale;
-        //        strokeWidth = (float)Math.Ceiling(30 * displayDensity);
-
-
-        //        if (_ringDrawArea == null || _sizeChanged)
-        //        {
-        //            _sizeChanged = false;
-
-        //            var ringAreaSize = Math.Min(Bounds.Width, Bounds.Height);
-
-        //            ringDiameter = (float)ringAreaSize - strokeWidth;
-
-        //            var left = Bounds.Left;
-        //            var top = Bounds.Top;
-
-        //            _ringDrawArea = new RectF(left, top, left + ringDiameter, top + ringDiameter);
-        //        }
+                var displayDensity = UIScreen.MainScreen.Scale;
+                strokeWidth = (float)Math.Ceiling(12 * displayDensity);
 
 
-        //        DrawBackgroundCircle(rect);
-        //        DrawProgressRing(rect, _progress, _backColor, _frontColor);
-        //        DrawTimer(rect, _ringDrawArea.Left + 50, _ringDrawArea.CenterY(), _paint);
-        //    };
-        //}
+                var ringAreaSize = Math.Min(Bounds.Width, Bounds.Height);
 
-        //private void DrawBackgroundCircle(CGRect rect)
-        //{
-        //    _paint.SetShader(null);
-        //    _paint.SetStyle(Paint.Style.Fill);
-        //    _paint.Color = Color.DarkGray;
-        //    canvas.DrawCircle(_ringDrawArea.CenterX(), _ringDrawArea.CenterY(), ringDiameter / 2, _paint);
-        //}
-        //private void DrawProgressRing(CGRect rect, float progress,
-        //                              UIColor backColor,
-        //                              UIColor frontColor)
-        //{
-        //    _paint.SetShader(null);
-        //    _paint.Color = backColor;
-        //    _paint.SetStyle(Paint.Style.Stroke);
-        //    canvas.DrawArc(_ringDrawArea, 270, 360, false, _paint);
+                radius = (float)(ringAreaSize / 2f) - (strokeWidth / 2f);
 
-        //    if (progress >= 0.9)
-        //    {
-        //        _paint.SetShader(null);
-        //    }
-        //    else
-        //    {
-        //        SweepGradient sweepShader = new SweepGradient(_ringDrawArea.CenterX(), _ringDrawArea.CenterY(), color112, positions);
-        //        _paint.SetShader(sweepShader);
-        //    }
-        //    _paint.Color = frontColor;
-        //    canvas.DrawArc(_ringDrawArea, 270, 360 * progress, false, _paint);
-        //}
 
-        //private void DrawTimer(CGRect rect, float X, float Y, Paint paint)
-        //{
-        //    _paint.SetShader(null);
-        //    string timeInterval = TimeToString();
-        //    _paint.SetStyle(Paint.Style.Fill);
-        //    paint.Color = Color.Orange;
-        //    paint.TextSize = 100;
-        //    canvas.DrawText(timeInterval, X + 50, Y, paint);
-        //    paint.Color = _timeLeftTextColor;
-        //    paint.TextSize = 40;
-        //    canvas.DrawText(timeLeft, X + 100, Y + 70, paint);
-        //}
+                _ringDrawArea = new CGRect(Bounds.GetMidX(), Bounds.GetMidY(), Bounds.Width, Bounds.Height);
 
-        //private string TimeToString()
-        //{
-        //    TimeSpan interval = TimeSpan.FromSeconds(_time);
-        //    return interval.ToString("mm\\:ss");
-        //}
+
+
+
+                DrawBackgroundCircle(context, Bounds.GetMidX(), Bounds.GetMidY(), radius);
+                DrawProgressRing(context, Bounds.GetMidX(), Bounds.GetMidY(), radius, _progress, UIColor.Red, UIColor.Blue);
+                DrawTimer(context, _ringDrawArea.Left + 50, _ringDrawArea.Top + 50);
+            }
+
+
+        }
+
+        private void DrawBackgroundCircle(CGContext context, nfloat x, nfloat y, nfloat ringDiameter)
+        {
+            //_paint.SetShader(null);
+            //_paint.SetStyle(Paint.Style.Fill);
+            //_paint.Color = Color.DarkGray;
+            context.SetFillColor(UIColor.DarkGray.CGColor);
+            path.AddArc(x, y, ringDiameter, 270, 360, false);
+            context.AddPath(path);
+            context.DrawPath(CGPathDrawingMode.Fill);
+
+
+        }
+        private void DrawProgressRing(CGContext context, nfloat x, nfloat y, nfloat ringDiameter, float progress,
+                                      UIColor backColor,
+                                      UIColor frontColor)
+        {
+            context.SetStrokeColor(backColor.CGColor);
+            path.AddArc(x, y, ringDiameter, 270, 360, false);
+            context.AddPath(path);
+            context.DrawPath(CGPathDrawingMode.Stroke);
+
+            if (progress >= 0.9)
+            {
+                var x1 = 0;
+                //_paint.SetShader(null);
+            }
+            else
+            {
+                //SweepGradient sweepShader = new SweepGradient(_ringDrawArea.CenterX(), _ringDrawArea.CenterY(), color112, positions);
+                //_paint.SetShader(sweepShader);
+            }
+
+            context.SetStrokeColor(frontColor.CGColor);
+            path.AddArc(x, y, ringDiameter, 270, 270 + (360 * progress), false);
+            context.AddPath(path);
+            context.DrawPath(CGPathDrawingMode.Stroke);
+        }
+
+        private void DrawTimer(CGContext context, nfloat X, nfloat Y)
+        {
+            //_paint.SetShader(null);
+            //_paint.ClearShadowLayer();
+            string timeInterval = TimeToString();
+            context.SetFillColor(UIColor.Brown.CGColor); // timeColor
+
+
+            DrawText(context, timeInterval, 20, X + 60, Y + 25, 80);
+            //paint.Color = _timeLeftTextColor;
+            //if (timeLeft == "EXPIRED")
+            //{
+            //    paint.SetTypeface(Typeface.DefaultBold);
+            //    X += 20;
+            //}
+
+            DrawText(context, timeLeft, 10, X + 90, Y + 75, 28);
+        }
+
+        private string TimeToString()
+        {
+            TimeSpan interval = TimeSpan.FromSeconds(_time);
+            return interval.ToString("mm\\:ss");
+        }
+
+        private void DrawText(CGContext context, string text, int textHeight, nfloat X, nfloat Y, int textSize)
+        {
+            var x = X;
+            var y = Y + textHeight;
+
+            context.TranslateCTM(x, y);
+
+            context.ScaleCTM(1, -1);
+            context.SetFillColor(UIColor.Red.CGColor);
+
+            var attributedString = new NSAttributedString(text,
+                new CTStringAttributes
+                {
+                    ForegroundColorFromContext = true,
+                    Font = new CTFont("Arial", textSize)
+                });
+
+            using (var textLine = new CTLine(attributedString))
+            {
+                textLine.Draw(context);
+            }
+        }
 
     }
 }
