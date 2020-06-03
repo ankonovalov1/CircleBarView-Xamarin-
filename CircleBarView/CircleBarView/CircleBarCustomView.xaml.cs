@@ -1,6 +1,5 @@
 ﻿using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using Color = Android.Graphics.Color;
 
 namespace CircleBarView
 {
@@ -22,7 +21,7 @@ namespace CircleBarView
         }
 
         public static readonly BindableProperty BackColorProperty = BindableProperty.Create("BackColor", typeof(Color),
-                                                                                                       typeof(CircleBarCustomView), Color.ParseColor("#38192f"));
+                                                                                                       typeof(CircleBarCustomView), Color.FromHex("#38192f"));
         public Color BackColor
         {
             get { return (Color)base.GetValue(BackColorProperty); }
@@ -31,7 +30,7 @@ namespace CircleBarView
 
 
         public static readonly BindableProperty FrontColorProperty = BindableProperty.Create("FrontColor", typeof(Color),
-                                                                                                       typeof(CircleBarCustomView), Color.ParseColor("#fd7a00"));
+                                                                                                       typeof(CircleBarCustomView), Color.FromHex("#fd7a00"));
         public Color FrontColor
         {
             get { return (Color)base.GetValue(FrontColorProperty); }

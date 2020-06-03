@@ -39,8 +39,8 @@ namespace CircleBarView.Droid
             if (e.NewElement != null)
             {
                 circleBar.Progress = e.NewElement.Progress;
-                circleBar.BackColor = e.NewElement.BackColor;
-                circleBar.FrontColor = e.NewElement.FrontColor;
+                circleBar.BackColor = e.NewElement.BackColor.ToAndroid();
+                circleBar.FrontColor = e.NewElement.FrontColor.ToAndroid();
                 circleBar.TimerIsRunning = e.NewElement.TimerIsRunning;
                 circleBar.Time = e.NewElement.Time;
                 circleBar.TimeLeft = e.NewElement.TimeLeft;
@@ -61,11 +61,11 @@ namespace CircleBarView.Droid
             }
             if (e.PropertyName == CircleBarCustomView.BackColorProperty.PropertyName)
             {
-                Control.BackColor = Element.BackColor;
+                Control.BackColor = Element.BackColor.ToAndroid();
             }
             if (e.PropertyName == CircleBarCustomView.FrontColorProperty.PropertyName)
             {
-                Control.FrontColor = Element.FrontColor;
+                Control.FrontColor = Element.FrontColor.ToAndroid();
             }
             if (e.PropertyName == CircleBarCustomView.TimeProperty.PropertyName)
             {
