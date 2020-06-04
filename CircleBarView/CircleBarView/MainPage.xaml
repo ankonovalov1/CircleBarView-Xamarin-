@@ -8,8 +8,9 @@
              x:Class="CircleBarView.MainPage">
     <Grid>
         <Button x:Name="btn1" Text="Нажми епть" Grid.Row="2"/>
-        <Grid BackgroundColor="#1b1d23" Grid.Row="5" Grid.ColumnSpan="3">            
-        </Grid>
+        <!--<Grid BackgroundColor="#1b1d23" Grid.Row="5" Grid.ColumnSpan="3">            
+        </Grid>-->
+        <control:BottomView x:Name="bottomView" Grid.Row="5" Grid.ColumnSpan="3"/>
         <control:CircleBarCustomView x:Name="CircleBar"  Grid.Row="4" Grid.RowSpan="2" Grid.Column="1" />
     </Grid>
 </ContentPage>

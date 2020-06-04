@@ -11,6 +11,40 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\back_arrow\back_arrow_gray.png" />
+    <None Remove="Images\back_arrow\back_arrow_gray_2x.png" />
+    <None Remove="Images\back_arrow\back_arrow_gray_3x.png" />
+    <None Remove="Images\back_arrow\back_arrow_green.png" />
+    <None Remove="Images\back_arrow\back_arrow_green_2x.png" />
+    <None Remove="Images\back_arrow\back_arrow_red.png" />
+    <None Remove="Images\back_arrow\back_arrow_red_2x.png" />
+    <None Remove="Images\forward_arrow\forward_arrow_gray.png" />
+    <None Remove="Images\forward_arrow\forward_arrow_gray_2x.png" />
+    <None Remove="Images\forward_arrow\forward_arrow_gray_3x.png" />
+    <None Remove="Images\forward_arrow\forward_arrow_green.png" />
+    <None Remove="Images\forward_arrow\forward_arrow_green_2x.png" />
+    <None Remove="Images\forward_arrow\forward_arrow_red.png" />
+    <None Remove="Images\forward_arrow\forward_arrow_red_2x.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\back_arrow\back_arrow_gray.png" />
+    <EmbeddedResource Include="Images\back_arrow\back_arrow_gray_2x.png" />
+    <EmbeddedResource Include="Images\back_arrow\back_arrow_gray_3x.png" />
+    <EmbeddedResource Include="Images\back_arrow\back_arrow_green.png" />
+    <EmbeddedResource Include="Images\back_arrow\back_arrow_green_2x.png" />
+    <EmbeddedResource Include="Images\back_arrow\back_arrow_red.png" />
+    <EmbeddedResource Include="Images\back_arrow\back_arrow_red_2x.png" />
+    <EmbeddedResource Include="Images\forward_arrow\forward_arrow_gray.png" />
+    <EmbeddedResource Include="Images\forward_arrow\forward_arrow_gray_2x.png" />
+    <EmbeddedResource Include="Images\forward_arrow\forward_arrow_gray_3x.png" />
+    <EmbeddedResource Include="Images\forward_arrow\forward_arrow_green.png" />
+    <EmbeddedResource Include="Images\forward_arrow\forward_arrow_green_2x.png" />
+    <EmbeddedResource Include="Images\forward_arrow\forward_arrow_red.png" />
+    <EmbeddedResource Include="Images\forward_arrow\forward_arrow_red_2x.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Plugin.Toast" Version="2.1.2" />
     <PackageReference Include="SkiaSharp" Version="1.68.3" />
     <PackageReference Include="Xamarin.Forms" Version="4.6.0.800" />
@@ -30,6 +64,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="BottomView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="CircleBarCustomView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

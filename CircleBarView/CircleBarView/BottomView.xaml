@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:CircleBarView"
+             mc:Ignorable="d"
+             x:Class="CircleBarView.BottomView">
+    <ContentView.Content>
+
+        <StackLayout BackgroundColor="#1b1d23" Orientation="Horizontal" Padding="20, 15, 20, 0">
+            <Image x:Name="backArrow" Source="{local:ImageResource CircleBarView.Images.back_arrow.back_arrow_gray_3x.png}" 
+                   HorizontalOptions="Start" VerticalOptions="Start">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer
+                Tapped="SkipGestureRecognizer_Tapped"
+                NumberOfTapsRequired="1" />
+                </Image.GestureRecognizers>
+            </Image>
+            <Label x:Name="skipLabel" Padding="0, 5, 0, 0" BackgroundColor="#1b1d23" HorizontalOptions="StartAndExpand" VerticalOptions="Start"
+                    Text="SKIP"
+                    FontSize="Small"
+                    TextColor="#8d8e91">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer
+                Tapped="SkipGestureRecognizer_Tapped"
+                NumberOfTapsRequired="1" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Label x:Name="openLabel" Padding="0, 5, 0, 0" BackgroundColor="#1b1d23" HorizontalOptions="EndAndExpand" VerticalOptions="Start"
+                    Text="OPEN"
+                    FontSize="Small"
+                    TextColor="#8d8e91">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer
+                Tapped="OpenGestureRecognizer_Tapped"
+                NumberOfTapsRequired="1" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Image x:Name="forwardArrow" Source="{local:ImageResource CircleBarView.Images.forward_arrow.forward_arrow_gray_3x.png}"
+                   HorizontalOptions="End" VerticalOptions="Start">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer
+                Tapped="OpenGestureRecognizer_Tapped"
+                NumberOfTapsRequired="1" />
+                </Image.GestureRecognizers>
+            </Image>
+                         
+
+        </StackLayout>
+    </ContentView.Content>
+</ContentView>
