@@ -1,16 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:control="clr-namespace:CircleBarView;assembly=CircleBarView"
-             mc:Ignorable="d"
-             x:Class="CircleBarView.MainPage">
-    <Grid>
-        <Button x:Name="btn1" Text="Нажми епть" Grid.Row="2"/>
-        <!--<Grid BackgroundColor="#1b1d23" Grid.Row="5" Grid.ColumnSpan="3">            
+<ContentPage
+    x:Class="CircleBarView.MainPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:control="clr-namespace:CircleBarView;assembly=CircleBarView"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid BackgroundColor="#040404">
+        <Button
+            x:Name="btn1"
+            Grid.Row="2"
+            Text="Нажми епть" />
+        <!--<Grid BackgroundColor="#1b1d23" Grid.Row="5" Grid.ColumnSpan="3">
         </Grid>-->
-        <control:BottomView x:Name="bottomView" Grid.Row="5" Grid.ColumnSpan="3"/>
-        <control:CircleBarCustomView x:Name="CircleBar"  Grid.Row="4" Grid.RowSpan="2" Grid.Column="1" />
+        <control:BottomView
+            x:Name="bottomView"
+            Grid.Row="5"
+            Grid.ColumnSpan="3" />
+        <control:CircleBarCustomView
+            x:Name="CircleBar"
+            Grid.Row="4"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            StrokeWidth="10" />
     </Grid>
 </ContentPage>

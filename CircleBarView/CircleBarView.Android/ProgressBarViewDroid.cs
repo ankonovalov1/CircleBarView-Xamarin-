@@ -1,7 +1,8 @@
 ﻿using System;
-using Android.Animation;
+using System.Timers;
 using Android.Content;
 using Android.Graphics;
+using Android.Renderscripts;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
@@ -15,17 +16,18 @@ namespace CircleBarView.Droid
         public ProgressBarViewDroid(Context context, IAttributeSet attrs) :
             base(context, attrs)
         {
-            Initialize();
+            Initialize();            
         }
 
         public ProgressBarViewDroid(Context context, IAttributeSet attrs, int defStyle) :
             base(context, attrs, defStyle)
         {
-            Initialize();
+            Initialize();            
         }
 
         private void Initialize()
         {
+            displayDensity = Context.Resources.DisplayMetrics.Density;
             _timeLeftTextColor = Color.Gray;
             timeColor = Color.ParseColor("#f69326");
             timeLeft = CircleBarStaticResources.TIME_LEFT;
@@ -40,19 +42,43 @@ namespace CircleBarView.Droid
             {
                 0.000f, 0.25f, 0.50f,
                 0.75f, 0.999f
-            };
+            };            
         }
-
+        private int ringAreaSize;
         private string timeLeft;
-        private float _progress, ringDiameter, strokeWidth;
+        private float _progress, internalDiameter, strokeWidth;
         private Color _backColor, _frontColor, _timeLeftTextColor, timeColor;
         private Paint _paint;
-        private RectF _ringDrawArea;
-        private bool _sizeChanged = false;
-        private bool _timerIsRunning = false;
-        private float _time;
+        private RectF _ringInternalArea;
+        private float displayDensity;
         int[] color112;
         float[] positions;
+
+        public Color BackColor { get => _backColor; set => _backColor = value; }
+        public Color FrontColor
+        {
+            get
+            {
+                return _frontColor;
+            }
+            set
+            {
+                _frontColor = value;
+                timeColor = _frontColor;
+            }
+        }
+
+        public bool IsActive { get; set; }
+        public float Time { get; set; }    
+        public float StrokeWidth
+        {
+            get { return strokeWidth; }
+            set
+            {
+                strokeWidth = value;
+            }
+        }
+        public bool TimerIsRunning { get; set; }
         public float Progress
         {
             get
@@ -67,31 +93,14 @@ namespace CircleBarView.Droid
                     if (_progress >= 0.9)
                     {
                         FrontColor = Color.ParseColor("#c60e3b");
-
                     }
-                    if (_timerIsRunning)
+                    if (TimerIsRunning)
                     {
                         Invalidate();
                     }
                 }
             }
         }
-        public Color BackColor { get => _backColor; set => _backColor = value; }
-        public Color FrontColor
-        {
-            get
-            {
-                return _frontColor;
-            }
-            set
-            {
-                _frontColor = value;
-                timeColor = _frontColor;
-            }
-        }    
-       
-        public float Time { get => _time; set => _time = value; }
-        public bool TimerIsRunning { get => _timerIsRunning; set => _timerIsRunning = value; }
         public string TimeLeft
         {
             get
@@ -107,99 +116,97 @@ namespace CircleBarView.Droid
                     Invalidate();
                 }
             }
-        }
+        }        
+
         protected override void OnDraw(Canvas canvas)
         {            
-            if (_paint == null)
+            ringAreaSize = Math.Min(canvas.ClipBounds.Width(), canvas.ClipBounds.Height());            
+
+            if (_ringInternalArea == null)
             {
-                var displayDensity = Context.Resources.DisplayMetrics.Density;
-                strokeWidth = (float)Math.Ceiling(12 * displayDensity);
+                internalDiameter = ringAreaSize - strokeWidth * displayDensity;                
 
-                _paint = new Paint();
-                _paint.StrokeWidth = strokeWidth;
-                _paint.SetStyle(Paint.Style.Stroke);
-                _paint.Flags = PaintFlags.AntiAlias;
+                var internalLeft = canvas.ClipBounds.CenterX() - internalDiameter / 2;
+                var internalTop = canvas.ClipBounds.CenterY() - internalDiameter / 2;
 
-            }
-
-            if (_ringDrawArea == null || _sizeChanged)
-            {
-                _sizeChanged = false;
-
-                var ringAreaSize = Math.Min(canvas.ClipBounds.Width(), canvas.ClipBounds.Height());
-                
-                ringDiameter = ringAreaSize - _paint.StrokeWidth;
-                
-
-                var left = canvas.ClipBounds.CenterX() - ringDiameter / 2;
-                var top = canvas.ClipBounds.CenterY() - ringDiameter / 2;
-
-                _ringDrawArea = new RectF(left, top, left + ringDiameter, top + ringDiameter);
-                
-            }
+                _ringInternalArea = new RectF(internalLeft, internalTop, internalLeft + internalDiameter, internalTop + internalDiameter);
+            }                           
             
+            if(_paint == null)
+            {
+                _paint = new Paint();
+                _paint.StrokeWidth = strokeWidth * displayDensity;
+                _paint.Flags = PaintFlags.AntiAlias;
+            }            
+
             DrawBackgroundCircle(canvas);
             DrawProgressRing(canvas, _progress, _backColor, _frontColor);
-            DrawTimer(canvas, _ringDrawArea.Left, _ringDrawArea.CenterY(), _paint);
+            DrawTimer(canvas);
         }
         private void DrawBackgroundCircle(Canvas canvas)
         {
-            _paint.SetShader(null);
-            _paint.SetShadowLayer(ringDiameter / 6, 0, 0, Color.ParseColor("#fb3a57"));
+            _paint.SetShader(null);            
+            _paint.SetShadowLayer(ringAreaSize / 14, 0, 0, Color.ParseColor("#fb3a57"));
             _paint.SetStyle(Paint.Style.Fill);
-            _paint.Color = Color.ParseColor("#1b1d23");
-            canvas.DrawCircle(_ringDrawArea.CenterX(), _ringDrawArea.CenterY(), ringDiameter / 2, _paint);
+            _paint.Color = Color.ParseColor("#1b1d23"); 
+            canvas.DrawCircle(_ringInternalArea.CenterX(), _ringInternalArea.CenterY(), internalDiameter / 2, _paint);
         }
         private void DrawProgressRing(Canvas canvas, float progress,
                                       Color backColor,
                                       Color frontColor)
-        {
+        {            
             _paint.SetShader(null);
-            _paint.ClearShadowLayer();
-            _paint.StrokeCap = Paint.Cap.Round;
-            _paint.Color = backColor;            
+            _paint.ClearShadowLayer();            
+            _paint.Color = backColor;
             _paint.SetStyle(Paint.Style.Stroke);
-            canvas.DrawArc(_ringDrawArea, 270, 360, false, _paint);
+            
+            canvas.DrawArc(_ringInternalArea, 270, 360, false, _paint);
 
             if (progress >= 0.9)
             {
                 _paint.SetShader(null);
             }
             else
-            {                
-                SweepGradient sweepShader = new SweepGradient(_ringDrawArea.CenterX(), _ringDrawArea.CenterY(), color112, positions);
+            {
+                SweepGradient sweepShader = new SweepGradient(_ringInternalArea.CenterX(), _ringInternalArea.CenterY(), color112, positions);
                 _paint.SetShader(sweepShader);
             }
-            _paint.SetShadowLayer(strokeWidth / 2, 0, 0, Color.ParseColor("#fb3a57"));
+            _paint.SetShadowLayer(10, 0, 0, Color.ParseColor("#fb3a57"));
+            _paint.StrokeCap = Paint.Cap.Round;
             _paint.Color = frontColor;
-            canvas.DrawArc(_ringDrawArea, 270, 360 * progress, false, _paint);
+            canvas.DrawArc(_ringInternalArea, 270, 360 * progress, false, _paint);
         }
 
-        private void DrawTimer(Canvas canvas, float X, float Y, Paint paint)
+        private void DrawTimer(Canvas canvas)
         {
             _paint.SetShader(null);
             _paint.ClearShadowLayer();
+
             string timeInterval = TimeToString();
             _paint.SetStyle(Paint.Style.Fill);
-            paint.Color = timeColor;
-            paint.TextSize = 80;
-            canvas.DrawText(timeInterval, X + 60, Y + 25, paint);
-            paint.Color = _timeLeftTextColor;
+            _paint.Color = timeColor;
+            _paint.TextSize = ringAreaSize / 10  * displayDensity;
+
+            var timeIntervalYbias = ringAreaSize / 10 * displayDensity / 2;
+            _paint.TextAlign = Paint.Align.Center;
+            canvas.DrawText(timeInterval, canvas.ClipBounds.CenterX() , canvas.ClipBounds.CenterY() + timeIntervalYbias, _paint);
+
+            _paint.Color = _timeLeftTextColor;
+            _paint.TextSize = (ringAreaSize / 3) / 10 * displayDensity;
+            var timeLeftYbias = 2.0f * timeIntervalYbias;
+            
             if (timeLeft == "EXPIRED")
             {
-                paint.SetTypeface(Typeface.DefaultBold);
-                X += 20;
+                _paint.SetTypeface(Typeface.DefaultBold);                
             }
-            paint.TextSize = 28;
-            canvas.DrawText(timeLeft, X + 90, Y + 75, paint);
+            canvas.DrawText(timeLeft, canvas.ClipBounds.CenterX(), canvas.ClipBounds.CenterY() + timeLeftYbias, _paint);
         }
 
         private string TimeToString()
         {
-            TimeSpan interval = TimeSpan.FromSeconds(_time);
+            TimeSpan interval = TimeSpan.FromSeconds(Time);
             return interval.ToString("mm\\:ss");
         }
 
-        
     }
 }

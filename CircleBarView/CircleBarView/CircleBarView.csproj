@@ -11,9 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Images\back_arrow\back_arrow_gray.png" />
-    <None Remove="Images\back_arrow\back_arrow_gray_2x.png" />
-    <None Remove="Images\back_arrow\back_arrow_gray_3x.png" />
     <None Remove="Images\back_arrow\back_arrow_green.png" />
     <None Remove="Images\back_arrow\back_arrow_green_2x.png" />
     <None Remove="Images\back_arrow\back_arrow_red.png" />
@@ -28,9 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Images\back_arrow\back_arrow_gray.png" />
-    <EmbeddedResource Include="Images\back_arrow\back_arrow_gray_2x.png" />
-    <EmbeddedResource Include="Images\back_arrow\back_arrow_gray_3x.png" />
     <EmbeddedResource Include="Images\back_arrow\back_arrow_green.png" />
     <EmbeddedResource Include="Images\back_arrow\back_arrow_green_2x.png" />
     <EmbeddedResource Include="Images\back_arrow\back_arrow_red.png" />

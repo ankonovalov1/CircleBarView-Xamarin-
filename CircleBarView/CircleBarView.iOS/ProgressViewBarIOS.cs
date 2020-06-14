@@ -74,8 +74,10 @@ namespace CircleBarView.iOS
                 }
             }
         }
+        public bool IsActive { get; set; }
         public UIColor BackColor { get => _backColor; set => _backColor = value; }
         public UIColor FrontColor { get => _frontColor; set => _frontColor = value; }
+        public float StrokeWidth { get => strokeWidth; set => strokeWidth = value; }
         public float Time { get => _time; set => _time = value; }
         public bool TimerIsRunning { get => _timerIsRunning; set => _timerIsRunning = value; }
         public string TimeLeft
@@ -93,7 +95,8 @@ namespace CircleBarView.iOS
                     SetNeedsDisplay();
                 }
             }
-        }
+        }        
+ 
         public override void Draw(CGRect rect)
         {
             base.Draw(rect);

@@ -27,8 +27,9 @@ namespace CircleBarView.iOS
                 circleBar.TimerIsRunning = e.NewElement.TimerIsRunning;
                 circleBar.Time = e.NewElement.Time;
                 circleBar.TimeLeft = e.NewElement.TimeLeft;
+                circleBar.StrokeWidth = e.NewElement.StrokeWidth;
+                circleBar.IsActive = e.NewElement.IsActive;
             }
-
         }
 
         protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -62,7 +63,14 @@ namespace CircleBarView.iOS
             {
                 Control.TimeLeft = Element.TimeLeft;
             }
-
+            if (e.PropertyName == CircleBarCustomView.StrokeWidthProperty.PropertyName)
+            {
+                Control.StrokeWidth = Element.StrokeWidth;
+            }
+            if (e.PropertyName == CircleBarCustomView.IsActiveProperty.PropertyName)
+            {
+                Control.IsActive = Element.IsActive;
+            }
 
         }
     }
